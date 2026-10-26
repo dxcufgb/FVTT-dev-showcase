@@ -92,6 +92,20 @@ You can link straight to a tab, for example from a YouTube description: `…/pro
 
 Without an API key the site reads the playlist's RSS feed, which only lists the 15 newest videos. To see all of them, add a free YouTube Data API key as the repo secret `YOUTUBE_API_KEY` (Google Cloud Console → enable *YouTube Data API v3* → create an API key). You can always set a video in `site.config.json` instead.
 
+## Promote the site
+
+`assets/img/workshop-badge.png` is a badge for module READMEs. It is 1280×264 pixels, made to show at 640 pixels wide. Paste this into a README:
+
+```html
+<a href="https://dxcufgb.github.io/FVTT-dev-showcase/"><img src="https://dxcufgb.github.io/FVTT-dev-showcase/assets/img/workshop-badge.png" alt="Dxcufgb's Workshop: every Foundry VTT module, video and changelog in one place" width="640"></a>
+```
+
+YouTube descriptions can't show images, so use a text line there:
+
+```
+🎲 All my Foundry VTT modules, videos and changelogs: https://dxcufgb.github.io/FVTT-dev-showcase/
+```
+
 ## Rebuild right after a release (optional)
 
 The 6-hour schedule is usually enough. For an instant update, add a step at the end of a module's release workflow. It needs a fine-grained token with **Contents: read and write** on the site repo, saved as the secret `SITE_DISPATCH_TOKEN` in the module repo:
