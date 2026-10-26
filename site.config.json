@@ -20,12 +20,57 @@
     "License"
   ],
 
-  "modules": {
+  "projects": {
+    "FoundryVTT-dice-trails": {
+      "videos": {
+        "demo": "https://youtu.be/cyVdHcMwvkg",
+        "tutorial": "https://youtu.be/XLAXbURu2t8"
+      }
+    },
+    "FoundryVTT-reminders": {
+      "videos": {
+        "demo": "https://youtu.be/JYNjwKPfEEc",
+        "tutorial": "https://youtu.be/EoMTPv80Imw"
+      }
+    },
+    "FoundryVTT-death-trigger": {
+      "videos": {
+        "demo": "https://youtu.be/1_IfXjIs74s",
+        "tutorial": "https://youtu.be/Ihq5xm81Qzg"
+      }
+    },
     "FoundryVTT-linguistic-chat": {
-      "stripReadmeSections": ["Known PoC limitations"]
+      "stripReadmeSections": [
+        "Known PoC limitations"
+      ]
     },
     "FoundryVTT-session-summary": {
       "wip": true
+    },
+    "FoundryVTT-discord-integration": {
+      "include": true,
+      "kind": "Discord bot",
+      "title": "Discord Integration"
+    },
+    "FoundryVTT-world-backup-to-git": {
+      "include": true,
+      "wip": true,
+      "kind": "Server tool",
+      "title": "World Backup to Git",
+      "description": "Backs up every world on a self-hosted Foundry server to its own private GitHub repository on a schedule, so any world can be rolled back to an earlier state.",
+      "details": {
+        "Hosting": "Self-hosted Foundry only"
+      }
+    },
+    "FoundryVTT-Private-Github-proxy": {
+      "include": true,
+      "wip": true,
+      "kind": "Server tool",
+      "title": "Private GitHub Proxy",
+      "description": "Lets a self-hosted Foundry server install and update modules released from private GitHub repositories. Great for module development, before a module is ready for the public.",
+      "details": {
+        "Hosting": "Self-hosted Foundry only"
+      }
     }
   }
 }

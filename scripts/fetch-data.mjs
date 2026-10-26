@@ -146,15 +146,25 @@ function shortTitle(title) {
 }
 
 // ---------- main ----------
+// Per-repo settings live under "projects" (older configs used "modules").
+const PROJECTS = { ...(config.modules || {}), ...(config.projects || {}) };
+const prettyName = (repoName) => repoName.replace(/^FoundryVTT-/i, "").split(/[-_]+/)
+  .map((w, i) => (i > 0 && SMALL.has(w.toLowerCase()) ? w.toLowerCase() : w[0].toUpperCase() + w.slice(1))).join(" ");
+const projectSlug = (repoName) => PROJECTS[repoName]?.slug || repoName.replace(/^FoundryVTT-/i, "").toLowerCase();
+
 log(`owner ${OWNER}${TOKEN ? " (authenticated)" : " (unauthenticated: 60 requests/hour)"}`);
 const repos = (await ghAll(`/users/${OWNER}/repos?per_page=100&type=owner&sort=pushed`))
   .filter((r) => !r.fork && !r.archived && !r.private && !config.exclude.includes(r.name));
+
+const COMMIT_SKIP = /^(merge |bump |release |chore\(release\)|v?\d+\.\d+\.\d+$)/i;
 
 const modules = [];
 for (const repo of repos) {
   const branch = repo.default_branch;
   const branchManifest = await json(raw(repo.name, branch, "module.json"));
-  if (!branchManifest?.id) continue;
+  const isModule = !!branchManifest?.id;
+  // Not a Foundry module (a bot, a server, ...): listed only when the config includes it.
+  if (!isModule && !PROJECTS[repo.name]?.include) continue;
 
   const releases = (await ghAll(`/repos/${OWNER}/${repo.name}/releases?per_page=100`))
     .filter((r) => !r.draft);
@@ -162,10 +172,11 @@ for (const repo of repos) {
   const latest = published[0] || releases[0] || null;
 
   // The released manifest is the truth for version and compatibility.
-  const released = latest
+  const released = isModule && latest
     ? await json(`https://github.com/${OWNER}/${repo.name}/releases/download/${latest.tag_name}/module.json`)
     : null;
-  const m = released?.id ? released : branchManifest;
+  const m = released?.id ? released : branchManifest || {};
+  const pkg = isModule ? null : await json(raw(repo.name, branch, "package.json"));
 
   const [readme, changelog] = await Promise.all([
     text(raw(repo.name, branch, "README.md")),
@@ -173,13 +184,16 @@ for (const repo of repos) {
   ]);
 
   const rel = m.relationships || {};
+  const hasZips = releases.some((r) => r.assets?.some((a) => /\.zip$/i.test(a.name)));
+  const title = m.title || prettyName(repo.name);
   const mod = {
     repo: repo.name,
-    id: m.id,
-    title: m.title,
-    shortTitle: shortTitle(m.title),
-    description: String(m.description || repo.description || "").replace(/<[^>]+>/g, "").trim(),
-    version: m.version || versionOf(latest?.tag_name),
+    isModule,
+    id: m.id || projectSlug(repo.name),
+    title,
+    shortTitle: isModule ? shortTitle(title) : title,
+    description: String(m.description || repo.description || pkg?.description || "").replace(/<[^>]+>/g, "").trim(),
+    version: m.version || versionOf(latest?.tag_name) || pkg?.version || null,
     compatibility: m.compatibility || {},
     manifest: m.manifest || null,
     url: repo.html_url,
@@ -190,7 +204,7 @@ for (const repo of repos) {
     requires: (rel.requires || []).map((r) => ({ id: r.id, type: r.type, reason: r.reason || "" })),
     recommends: (rel.recommends || []).map((r) => ({ id: r.id, type: r.type, reason: r.reason || "" })),
     systems: (rel.systems || []).map((s) => ({ id: s.id, minimum: s.compatibility?.minimum || null })),
-    downloads: releases.reduce((n, r) => n + zipDownloads(r.assets), 0),
+    downloads: hasZips ? releases.reduce((n, r) => n + zipDownloads(r.assets), 0) : null,
     readme,
     releases: releases.map((r) => {
       const v = versionOf(r.tag_name);
@@ -208,7 +222,6 @@ for (const repo of repos) {
   };
   // No CHANGELOG entry and only auto-generated notes: list the commits since
   // the previous release instead (newest 5 releases, the ones the site shows).
-  const COMMIT_SKIP = /^(merge |bump |release |chore\(release\)|v?\d+\.\d+\.\d+$)/i;
   for (let i = 0; i < Math.min(5, mod.releases.length); i++) {
     const r = mod.releases[i], prev = mod.releases[i + 1];
     if (r.notes || !prev) continue;
@@ -223,7 +236,22 @@ for (const repo of repos) {
   }
 
   modules.push(mod);
-  log(`${mod.shortTitle} ${mod.version} — ${mod.releases.length} releases, ${mod.downloads} downloads`);
+  log(`${mod.shortTitle} ${mod.version ?? "(no version)"} — ${mod.releases.length} releases, ${mod.downloads ?? "no"} downloads`);
+}
+
+// Included repos that are not public yet: listed from the config alone
+// (title, description, content/<slug>.md). They fill in once the repo is public.
+for (const [name, p] of Object.entries(PROJECTS)) {
+  if (!p.include || modules.some((m) => m.repo === name) || config.exclude.includes(name)) continue;
+  const title = p.title || prettyName(name);
+  modules.push({
+    repo: name, isModule: false, notPublic: true,
+    id: projectSlug(name), title, shortTitle: title,
+    description: p.description || "", version: null, compatibility: {}, manifest: null,
+    url: `https://github.com/${OWNER}/${name}`, branch: "main", topics: [], createdAt: null, license: null,
+    requires: [], recommends: [], systems: [], downloads: null, readme: null, releases: [],
+  });
+  log(`${title} — not public yet, listed from site.config.json`);
 }
 
 const videos = await playlistVideos(config.youtubePlaylist);
@@ -232,10 +260,11 @@ log(`${videos.length} playlist videos`);
 // them, so editing the config never needs a re-fetch.
 for (const mod of modules) mod.videos = matchVideos(mod, videos);
 
-modules.sort((a, b) => (b.releases[0]?.date || b.createdAt).localeCompare(a.releases[0]?.date || a.createdAt));
+const when = (m) => m.releases[0]?.date || m.createdAt || "";
+modules.sort((a, b) => when(b).localeCompare(when(a)));
 await mkdir(path.join(ROOT, "data"), { recursive: true });
 await writeFile(
   path.join(ROOT, "data", "site-data.json"),
   JSON.stringify({ generatedAt: new Date().toISOString(), owner: OWNER, playlist: videos, modules }, null, 2)
 );
-log(`wrote data/site-data.json with ${modules.length} modules`);
+log(`wrote data/site-data.json with ${modules.length} projects`);

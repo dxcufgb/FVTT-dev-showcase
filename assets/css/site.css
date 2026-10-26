@@ -287,6 +287,7 @@ h1, h2, h3 { line-height: 1.15; text-wrap: balance; }
   font-size: .75rem; border-radius: 9px; background: var(--slate-3); color: var(--bone);
 }
 .video-stage {
+  position: relative;
   background: #000; border: 1px solid #000; overflow: hidden;
   border-radius: 0 var(--r-chrome) var(--r-chrome) var(--r-chrome);
   box-shadow: 0 0 0 1px rgba(255, 100, 0, .25), 0 20px 50px -20px rgba(0, 0, 0, .9);
@@ -299,6 +300,8 @@ h1, h2, h3 { line-height: 1.15; text-wrap: balance; }
 }
 .player .play svg { width: 100%; height: 100%; fill: rgba(20, 20, 20, .82); transition: fill .15s; }
 .player .play:hover svg, .player .play:focus-visible svg { fill: var(--ember); }
+
+.video-panel.is-leaving { position: absolute; top: 0; left: 0; width: 100%; }
 
 /* a tab with no video yet: same 16:9 frame so switching tabs doesn't jump */
 .video-empty {

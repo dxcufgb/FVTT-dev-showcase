@@ -25,7 +25,7 @@ What the site uses from the module repo:
 | Module page text | `README.md`, without its title, badges and the sections listed in `stripReadmeSections` |
 | Videos | The YouTube playlist (see below) |
 
-The title prefix `Dxcufgb's` is dropped and the rest is title-cased, so `Dxcufgb's lively tokens` shows as **Lively Tokens**. Page URLs drop the `dxcufgbs-` id prefix: `/modules/lively-tokens/`.
+The title prefix `Dxcufgb's` is dropped and the rest is title-cased, so `Dxcufgb's lively tokens` shows as **Lively Tokens**. Page URLs drop the `dxcufgbs-` id prefix: `/projects/lively-tokens/`.
 
 ## Optional extras per module
 
@@ -33,10 +33,10 @@ All optional. `<slug>` is the module id without `dxcufgbs-`, for example `lively
 
 - **Card image:** add `assets/modules/<slug>.webp` (or `.png`, `.jpg`, `.gif`), 16:9. Without one, the card uses the YouTube video thumbnail, and without a video a drawn sigil.
 - **Page text:** add `content/<slug>.md` to replace the README on the module page.
-- **Settings:** add an entry under `modules` in `site.config.json`, keyed by the repo name:
+- **Settings:** add an entry under `projects` in `site.config.json`, keyed by the repo name:
 
 ```json
-"modules": {
+"projects": {
   "FoundryVTT-lively-tokens": {
     "title": "Lively Tokens",
     "summary": "Cinematic animated rings around tokens.",
@@ -54,6 +54,20 @@ All optional. `<slug>` is the module id without `dxcufgbs-`, for example `lively
 ```
 
 To hide a repo that has a `module.json` but should not be listed, add its name to `exclude`, or set `"hidden": true`.
+
+## Listing a project that is not a Foundry module
+
+Bots, servers and other tools have no `module.json`, so they are only listed when `site.config.json` includes them:
+
+```json
+"FoundryVTT-discord-integration": { "include": true, "kind": "Discord bot", "title": "Discord Integration" }
+```
+
+- `kind` is shown on the card and the page instead of the Foundry version, for example *Discord bot* or *Server tool*.
+- Version, changelog, downloads and page text come from the repo like for a module (GitHub releases, `CHANGELOG.md`, `README.md`). The README keeps its install section, since these pages have no Foundry install box.
+- `details` adds lines to the page's info box, for example `"details": { "Hosting": "Self-hosted Foundry only" }`.
+
+**A repo that is still private** can be listed too. The site can't read it, so it shows what the config and `content/<slug>.md` give it: `title`, `description` (card text and page summary), `kind`, `wip` and `details`, with "Not released yet" and no GitHub links. When the repo goes public, its releases and README show up on the next build. Delete `content/<slug>.md` at that point if the README should replace your page text.
 
 ## Marking a module as work in progress
 
@@ -74,7 +88,7 @@ The top of each module page has a **Demo** and a **Tutorial** tab. Both always s
 
 A video is linked automatically when its YouTube title contains the module's short title (for example "Lively Tokens"). Titles with words like *tutorial*, *instructions*, *how to* or *guide* go to **Tutorial**, the rest to **Demo**. Videos set under `videos` in `site.config.json` always win. Use a video id or any YouTube link (`youtu.be/…`, `watch?v=…`, `shorts/…`).
 
-You can link straight to a tab, for example from a YouTube description: `…/modules/lively-tokens/#tutorial` (also `#demo` and `#more`).
+You can link straight to a tab, for example from a YouTube description: `…/projects/lively-tokens/#tutorial` (also `#demo` and `#more`).
 
 Without an API key the site reads the playlist's RSS feed, which only lists the 15 newest videos. To see all of them, add a free YouTube Data API key as the repo secret `YOUTUBE_API_KEY` (Google Cloud Console → enable *YouTube Data API v3* → create an API key). You can always set a video in `site.config.json` instead.
 

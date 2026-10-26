@@ -35,23 +35,54 @@ document.addEventListener("click", (e) => {
   }
 });
 
-// Demo / Tutorial / More tabs. A link ending in #demo, #tutorial or #more opens that tab.
+// Demo / Tutorial / More tabs. Switching slides the videos sideways, in the
+// direction of the tab you picked. A link ending in #demo, #tutorial or #more
+// opens that tab.
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
 document.querySelectorAll(".video-tabs").forEach((list) => {
   const tabs = [...list.querySelectorAll('[role="tab"]')];
+  const stage = list.closest(".videos").querySelector(".video-stage");
   const panelOf = (t) => document.getElementById(t.getAttribute("aria-controls"));
-  const select = (tab) => {
+  let settle = null; // finishes a slide that is still running
+
+  const select = (tab, animate = true) => {
+    const current = tabs.find((t) => t.getAttribute("aria-selected") === "true");
+    if (tab === current) return;
+    if (settle) settle();
+
     tabs.forEach((t) => {
       const on = t === tab;
       t.setAttribute("aria-selected", on);
       t.tabIndex = on ? 0 : -1;
-      const panel = panelOf(t);
-      panel.hidden = !on;
-      if (!on) { // stop a playing video when switching away
-        const f = panel.querySelector("iframe");
-        if (f) f.src = f.src.replace("autoplay=1", "autoplay=0");
-      }
     });
+    const from = panelOf(current), to = panelOf(tab);
+    const f = from.querySelector("iframe"); // stop a playing video
+    if (f) f.src = f.src.replace("autoplay=1", "autoplay=0");
+
+    if (!animate || reduceMotion.matches || !to.animate) {
+      from.hidden = true; to.hidden = false;
+      return;
+    }
+    const dir = tabs.indexOf(tab) > tabs.indexOf(current) ? 1 : -1;
+    const h0 = stage.offsetHeight;
+    from.classList.add("is-leaving"); // taken out of the flow, so the stage takes the new panel's height
+    to.hidden = false;
+    const h1 = stage.offsetHeight;
+    const timing = { duration: 450, easing: "cubic-bezier(.22, .8, .24, 1)" };
+    const anims = [
+      from.animate([{ transform: "translateX(0)" }, { transform: `translateX(${-100 * dir}%)` }], timing),
+      to.animate([{ transform: `translateX(${100 * dir}%)` }, { transform: "translateX(0)" }], timing),
+      ...(h0 !== h1 ? [stage.animate([{ height: `${h0}px` }, { height: `${h1}px` }], timing)] : []),
+    ];
+    settle = () => {
+      anims.forEach((a) => a.cancel());
+      from.hidden = true;
+      from.classList.remove("is-leaving");
+      settle = null;
+    };
+    anims[1].onfinish = () => settle && settle();
   };
+
   tabs.forEach((t, i) => {
     t.tabIndex = t.getAttribute("aria-selected") === "true" ? 0 : -1;
     t.addEventListener("click", () => select(t));
@@ -62,12 +93,12 @@ document.querySelectorAll(".video-tabs").forEach((list) => {
       select(next); next.focus();
     });
   });
-  const fromHash = () => {
+  const fromHash = (animate) => {
     const t = tabs.find((t) => `#${t.id.replace(/^tab-/, "")}` === location.hash);
-    if (t) { select(t); list.closest(".videos").scrollIntoView({ block: "start" }); }
+    if (t) { select(t, animate); list.closest(".videos").scrollIntoView({ block: "start" }); }
   };
-  fromHash();
-  window.addEventListener("hashchange", fromHash);
+  fromHash(false);
+  window.addEventListener("hashchange", () => fromHash(true));
 });
 
 // Copy manifest URL

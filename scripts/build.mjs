@@ -4,7 +4,8 @@
 // Per-module extras, all optional:
 //   assets/modules/<slug>.(webp|png|jpg|jpeg|gif)  card + header image
 //   content/<slug>.md                              replaces the README on the module page
-//   site.config.json → modules["<repo>"]            title, summary, image, videos, wip, stripReadmeSections, hidden
+//   site.config.json → projects["<repo>"]           include, kind, title, summary, description, image, videos,
+//                                                   wip, details, stripReadmeSections, hidden
 
 import { readFile, writeFile, mkdir, cp, rm, access } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
@@ -16,6 +17,9 @@ const OUT = path.join(ROOT, "_site");
 const config = JSON.parse(await readFile(path.join(ROOT, "site.config.json"), "utf8"));
 const data = JSON.parse(await readFile(path.join(ROOT, "data", "site-data.json"), "utf8"));
 const OWNER = data.owner;
+// Per-repo settings live under "projects" (older configs used "modules").
+const PROJECTS = { ...(config.modules || {}), ...(config.projects || {}) };
+const DIR = "projects"; // URL folder for the project list and pages
 
 const exists = (p) => access(p).then(() => true, () => false);
 const esc = (s = "") => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -63,7 +67,9 @@ function markdownFor(mod) {
 
 // README → page body: drop the H1, the badge row and sections that the page already covers.
 function readmeHtml(mod, mdk) {
-  const strip = [...(config.stripReadmeSections || []), ...(config.modules?.[mod.repo]?.stripReadmeSections || [])]
+  const strip = [...(config.stripReadmeSections || []), ...(PROJECTS[mod.repo]?.stripReadmeSections || [])]
+    // without an install box on the page, keep the README's own install steps
+    .filter((x) => mod.manifest || !/^install/i.test(x))
     .map((s) => s.toLowerCase());
   const tokens = mdk.lexer(mod.readme);
   const kept = [];
@@ -106,7 +112,7 @@ function wipOf(m, over) {
 
 const modules = [];
 for (const m of data.modules) {
-  const over = config.modules?.[m.repo] || {};
+  const over = PROJECTS[m.repo] || {};
   if (over.hidden) continue;
   const slug = slugOf(m);
   let image = over.image || null;
@@ -123,12 +129,15 @@ for (const m of data.modules) {
   const customMd = path.join(ROOT, "content", `${slug}.md`);
   // Header line on the module page: the description's first sentence, without
   // parentheses. The full description is usually the README's opening anyway.
-  const summary = over.summary || m.description
+  const summary = over.summary || (over.description || m.description || "")
     .replace(/\s*\([^)]*\)/g, "")
     .split(/(?<=[.!?])\s+|:\s+/)[0]
     .replace(/[.:]$/, "") + ".";
   modules.push({
     ...m,
+    ...(over.description ? { description: over.description } : {}),
+    kind: over.kind || (m.isModule === false ? "Project" : "Foundry VTT module"),
+    details: over.details || {},
     summary,
     videos,
     wip: wipOf(m, over),
@@ -174,7 +183,7 @@ ${image ? `<meta property="og:image" content="${esc(image)}">` : ""}
   <a class="brand" href="${base}">${SIGIL}<span>${esc(config.siteTitle)}</span></a>
   <nav aria-label="Main">
     ${nav("", "Releases", "home")}
-    ${nav("modules/", "Modules", "modules")}
+    ${nav(`${DIR}/`, "Projects", "projects")}
     <a href="https://www.youtube.com/playlist?list=${esc(config.youtubePlaylist)}" rel="noopener" target="_blank">Videos</a>
     <a href="https://github.com/${OWNER}" rel="noopener" target="_blank">GitHub</a>
   </nav>
@@ -219,7 +228,7 @@ function home() {
   <time datetime="${esc(r.date)}">${fmtDate(r.date)}</time>
   <article class="chron-card parchment">
     <header>
-      <h3><a href="modules/${esc(r.mod.slug)}/">${esc(r.mod.shortTitle)}</a>${wipBadge(r.mod)}</h3>
+      <h3><a href="${DIR}/${esc(r.mod.slug)}/">${esc(r.mod.shortTitle)}</a>${wipBadge(r.mod)}</h3>
       <a class="tag" href="${esc(r.url)}" rel="noopener" target="_blank" title="Release on GitHub">${esc(r.version.match(/^\d/) ? "v" + r.version : r.version)}</a>
     </header>
     <div class="notes prose" data-clamp>${releaseNotes(mdk, r)}</div>
@@ -237,11 +246,11 @@ function home() {
     <h1>${esc(config.siteTitle)}</h1>
     <p class="lede">${esc(config.tagline)}</p>
     <dl class="hero-stats">
-      <div><dt>Modules</dt><dd>${modules.length}</dd></div>
+      <div><dt>Projects</dt><dd>${modules.length}</dd></div>
       <div><dt>Downloads</dt><dd>${fmtNum(totalDl)}</dd></div>
-      ${newest ? `<div><dt>Last release</dt><dd><a href="modules/${esc(newest.mod.slug)}/">${esc(newest.mod.shortTitle)} ${esc(newest.version)}</a></dd></div>` : ""}
+      ${newest ? `<div><dt>Last release</dt><dd><a href="${DIR}/${esc(newest.mod.slug)}/">${esc(newest.mod.shortTitle)} ${esc(newest.version)}</a></dd></div>` : ""}
     </dl>
-    <p class="hero-cta"><a class="btn" href="modules/">Browse all modules</a></p>
+    <p class="hero-cta"><a class="btn" href="${DIR}/">Browse all projects</a></p>
   </div>
 </section>
 <section class="chronicle" aria-labelledby="chron-h">
@@ -255,7 +264,7 @@ ${entries}
 
 // ---------- module grid ----------
 function moduleCard(mod, base) {
-  return `<li class="card parchment" data-title="${esc(mod.shortTitle.toLowerCase())}" data-search="${esc((mod.shortTitle + " " + mod.description + " " + mod.topics.join(" ") + (mod.wip ? " wip work in progress" : "")).toLowerCase())}" data-date="${esc(mod.latestDate)}" data-downloads="${mod.downloads}">
+  return `<li class="card parchment" data-title="${esc(mod.shortTitle.toLowerCase())}" data-search="${esc((mod.shortTitle + " " + mod.description + " " + mod.topics.join(" ") + " " + mod.kind + (mod.wip ? " wip work in progress" : "")).toLowerCase())}" data-date="${esc(mod.latestDate)}" data-downloads="${mod.downloads}">
   <a class="card-link" href="${esc(mod.slug)}/" aria-label="${esc(mod.shortTitle)}${mod.wip ? " (work in progress)" : ""}">
     <div class="card-media">${cardImage(mod, base)}${wipBadge(mod)}</div>
   </a>
@@ -265,8 +274,8 @@ function moduleCard(mod, base) {
     <p class="card-summary">${esc(mod.description)}</p>
     <hr class="taper">
     <dl class="props">
-      <div><dt>Version</dt><dd>${esc(mod.version)}</dd></div>
-      <div><dt>Foundry</dt><dd>${esc(foundryRange(mod.compatibility))}</dd></div>
+      <div><dt>Version</dt><dd>${mod.version ? esc(mod.version) : "Not released yet"}</dd></div>
+      ${mod.manifest ? `<div><dt>Foundry</dt><dd>${esc(foundryRange(mod.compatibility))}</dd></div>` : `<div><dt>Type</dt><dd>${esc(mod.kind)}</dd></div>`}
       <div><dt>Downloads</dt><dd>${fmtNum(mod.downloads)}</dd></div>
     </dl>
   </div>
@@ -276,15 +285,15 @@ function moduleCard(mod, base) {
 function modulesPage() {
   return layout({
     depth: 1,
-    active: "modules",
-    title: "Modules",
-    description: `All ${modules.length} public Foundry VTT modules by ${OWNER}.`,
+    active: "projects",
+    title: "Projects",
+    description: `All ${modules.length} Foundry VTT modules and tools by ${OWNER}.`,
     body: `
 <section class="page-head">
-  <h1>Modules</h1>
-  <p class="lede">Every public module, newest release first. Each one installs from its manifest link in Foundry.</p>
+  <h1>Projects</h1>
+  <p class="lede">Foundry VTT modules, and the bot and servers that run next to Foundry. Newest release first.</p>
   <div class="toolbar" hidden>
-    <label class="field"><span>Find</span><input type="search" id="filter" placeholder="Tokens, dice, sound…" autocomplete="off"></label>
+    <label class="field"><span>Find</span><input type="search" id="filter" placeholder="Tokens, dice, backup…" autocomplete="off"></label>
     <label class="field"><span>Sort by</span>
       <select id="sort"><option value="date">Latest release</option><option value="downloads">Downloads</option><option value="title">Name</option></select>
     </label>
@@ -293,7 +302,7 @@ function modulesPage() {
 <ul class="grid" id="grid">
 ${modules.map((m) => moduleCard(m, "../")).join("\n")}
 </ul>
-<p class="empty" id="empty" hidden>No module matches that search. Clear the field to see them all.</p>`,
+<p class="empty" id="empty" hidden>No project matches that search. Clear the field to see them all.</p>`,
   });
 }
 
@@ -355,14 +364,15 @@ function statBlock(mod) {
   const c = mod.compatibility || {};
   return `<aside class="statblock parchment" aria-label="Module details">
   <h2>${esc(mod.shortTitle)}</h2>
-  <p class="statblock-sub">Foundry VTT module, ${esc(sys || "system agnostic")}</p>
+  <p class="statblock-sub">${esc(mod.kind)}${mod.manifest ? `, ${esc(sys || "system agnostic")}` : ""}</p>
   <hr class="taper">
   <dl class="props">
     ${line("Status", mod.wip ? "Work in progress" : "")}
-    ${line("Version", esc(mod.version))}
-    ${line("Foundry", `${esc(foundryRange(c))}${c.verified ? ` <span class="muted">(verified ${esc(c.verified)})</span>` : ""}`)}
-    ${line("Downloads", fmtNum(mod.downloads))}
+    ${line("Version", mod.version ? esc(mod.version) : "Not released yet")}
+    ${line("Foundry", mod.manifest ? `${esc(foundryRange(c))}${c.verified ? ` <span class="muted">(verified ${esc(c.verified)})</span>` : ""}` : "")}
+    ${line("Downloads", mod.downloads == null ? "" : fmtNum(mod.downloads))}
     ${line("Released", mod.releases[0] ? fmtDate(mod.releases[0].date) : "")}
+    ${Object.entries(mod.details).map(([k, v]) => line(esc(k), esc(v))).join("\n    ")}
   </dl>
   ${mod.requires.length || mod.recommends.length || mod.license ? `<hr class="taper"><dl class="props">
     ${line("Requires", rel(mod.requires))}
@@ -373,18 +383,20 @@ function statBlock(mod) {
   <p class="install-help">In Foundry, open <b>Add-on Modules</b>, choose <b>Install Module</b> and paste this into <b>Manifest URL</b>.</p>
   <div class="manifest"><input readonly value="${esc(mod.manifest)}" aria-label="Manifest URL" id="manifest-${esc(mod.slug)}"><button type="button" class="copy" data-copy="#manifest-${esc(mod.slug)}">Copy</button></div>` : ""}
   <h3>Links</h3>
-  <ul class="links">
+  ${mod.notPublic ? `<p class="install-help">The source is not public yet. Follow the <a href="https://github.com/${OWNER}" rel="noopener" target="_blank">GitHub profile</a> to see it when it is.</p>` : `<ul class="links">
     <li><a href="${esc(mod.url)}" rel="noopener" target="_blank">Source on GitHub</a></li>
     <li><a href="${esc(mod.url)}/issues" rel="noopener" target="_blank">Report a bug</a></li>
     <li><a href="${esc(mod.url)}/releases" rel="noopener" target="_blank">All releases</a></li>
-  </ul>
+  </ul>`}
   <p class="kofi"><a href="${esc(config.kofi)}" rel="noopener" target="_blank"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5Zm13 1h1.5a2.5 2.5 0 0 1 0 5H17" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10.5 14.2 8.3 12a1.3 1.3 0 0 1 2.2-1.5 1.3 1.3 0 0 1 2.2 1.5Z" fill="currentColor"/></svg>Enjoying it? Buy me a coffee on Ko-fi</a></p>
 </aside>`;
 }
 
 function modulePage(mod) {
   const mdk = markdownFor(mod);
-  const body = mod.customMd ? mdk.render(mod.customMd) : readmeHtml(mod, mdk);
+  const body = mod.customMd ? mdk.render(mod.customMd)
+    : mod.readme ? readmeHtml(mod, mdk)
+    : `<p>${esc(mod.description)}</p>`;
   const history = mod.releases.filter((r) => !r.prerelease).slice(0, 5).map((r) => `<li>
   <details${r === mod.releases[0] ? " open" : ""}>
     <summary><span class="ver">${esc(r.version)}</span> <time datetime="${esc(r.date)}">${fmtDate(r.date)}</time></summary>
@@ -394,16 +406,16 @@ function modulePage(mod) {
 
   return layout({
     depth: 2,
-    active: "modules",
+    active: "projects",
     title: mod.shortTitle,
     description: mod.description,
     image: mod.thumbFallback,
     body: `
-<nav class="crumbs" aria-label="Breadcrumb"><a href="../">Modules</a> <span aria-hidden="true">/</span> <span aria-current="page">${esc(mod.shortTitle)}</span></nav>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../">Projects</a> <span aria-hidden="true">/</span> <span aria-current="page">${esc(mod.shortTitle)}</span></nav>
 <section class="module-head">
   <h1>${esc(mod.shortTitle)}</h1>
   <p class="lede">${esc(mod.summary)}</p>
-  ${mod.wip ? `<p class="wip-note">${wipBadge(mod)}<span>${esc(mod.wip.note || WIP_TEXT)} <a href="${esc(mod.url)}/issues" rel="noopener" target="_blank">Report bugs on GitHub</a>.</span></p>` : ""}
+  ${mod.wip ? `<p class="wip-note">${wipBadge(mod)}<span>${esc(mod.wip.note || WIP_TEXT)}${mod.notPublic ? "" : ` <a href="${esc(mod.url)}/issues" rel="noopener" target="_blank">Report bugs on GitHub</a>.`}</span></p>` : ""}
 </section>
 ${videoBlock(mod)}
 <div class="module-layout">
@@ -428,18 +440,18 @@ const _writeFile = writeFile;
 const writePage = (file, html) => _writeFile(file, file.endsWith(".html") ? finish(html) : html);
 
 await rm(OUT, { recursive: true, force: true });
-await mkdir(path.join(OUT, "modules"), { recursive: true });
+await mkdir(path.join(OUT, DIR), { recursive: true });
 await cp(path.join(ROOT, "assets"), path.join(OUT, "assets"), { recursive: true });
 await _writeFile(path.join(OUT, ".nojekyll"), "");
 await writePage(path.join(OUT, "index.html"), home());
-await writePage(path.join(OUT, "modules", "index.html"), modulesPage());
+await writePage(path.join(OUT, DIR, "index.html"), modulesPage());
 for (const mod of modules) {
-  await mkdir(path.join(OUT, "modules", mod.slug), { recursive: true });
-  await writePage(path.join(OUT, "modules", mod.slug, "index.html"), modulePage(mod));
+  await mkdir(path.join(OUT, DIR, mod.slug), { recursive: true });
+  await writePage(path.join(OUT, DIR, mod.slug, "index.html"), modulePage(mod));
 }
 await writePage(path.join(OUT, "404.html"), layout({
   depth: 0, title: "Page not found",
-  body: `<section class="page-head"><h1>This page is not on the map</h1><p class="lede">The link may be old or mistyped. <a href="./">Go to the latest releases</a> or <a href="./modules/">see all modules</a>.</p></section>`,
+  body: `<section class="page-head"><h1>This page is not on the map</h1><p class="lede">The link may be old or mistyped. <a href="./">Go to the latest releases</a> or <a href="./${DIR}/">see all projects</a>.</p></section>`,
 // 404.html is served at any depth, so it needs absolute links. In Actions,
 // BASE_PATH comes from actions/configure-pages ("/" or "/<repo>/").
 }).replace(/(href|src)="\.\//g, `$1="${(process.env.BASE_PATH || config.basePath || "/").replace(/\/?$/, "/")}`));
