@@ -1,0 +1,31 @@
+{
+  "owner": "dxcufgb",
+  "siteTitle": "Dxcufgb's Workshop",
+  "tagline": "Modules and other things for Foundry VTT, built at the table and tested in real sessions.",
+  "kofi": "https://ko-fi.com/dxcufgb",
+  "youtubePlaylist": "PLcshfuJI5rbM",
+  "latestReleaseCount": 10,
+
+  "titlePrefix": "^Dxcufgb'?s\\s+",
+  "slugPrefix": "dxcufgbs-",
+  "titleCase": true,
+
+  "exclude": [],
+
+  "stripReadmeSections": [
+    "Installation",
+    "Installing",
+    "Releasing",
+    "Development",
+    "License"
+  ],
+
+  "modules": {
+    "FoundryVTT-linguistic-chat": {
+      "stripReadmeSections": ["Known PoC limitations"]
+    },
+    "FoundryVTT-session-summary": {
+      "wip": true
+    }
+  }
+}
