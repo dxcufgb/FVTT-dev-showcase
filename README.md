@@ -94,10 +94,10 @@ Without an API key the site reads the playlist's RSS feed, which only lists the 
 
 ## Promote the site
 
-`assets/img/workshop-badge.png` is a badge for module READMEs. It is 1280×264 pixels, made to show at 640 pixels wide. Paste this into a README:
+`assets/img/workshop-badge.png` is a badge for module READMEs. It is 1300×268 pixels, made to show at 650 pixels wide. Paste this into a README:
 
 ```html
-<a href="https://dxcufgb.github.io/FVTT-dev-showcase/"><img src="https://dxcufgb.github.io/FVTT-dev-showcase/assets/img/workshop-badge.png" alt="Dxcufgb's Workshop: every Foundry VTT project, video and changelog in one place" width="640"></a>
+<a href="https://dxcufgb.github.io/FVTT-dev-showcase/"><img src="https://dxcufgb.github.io/FVTT-dev-showcase/assets/img/workshop-badge.png" alt="Dxcufgb's Workshop: every Foundry VTT project, video and changelog in one place" width="650"></a>
 ```
 
 YouTube descriptions can't show images, so use a text line there:
