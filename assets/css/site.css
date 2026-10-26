@@ -87,6 +87,14 @@ a:hover { color: var(--ember); }
 }
 .topbar nav a:hover { color: var(--bone); background: var(--slate-3); }
 .topbar nav a[aria-current="page"] { color: var(--bone); border-color: var(--ember); box-shadow: 0 0 8px rgba(255, 100, 0, .35) inset; }
+/* Links to other sites (they open in a new tab) carry a small arrow-out-of-a-box icon. */
+.topbar nav a.ext { display: inline-flex; align-items: center; gap: 5px; }
+.ext-icon { width: .8em; height: .8em; flex: none; opacity: .65; transition: opacity .15s; }
+.topbar nav a.ext:hover .ext-icon, .topbar nav a.ext:focus-visible .ext-icon { opacity: 1; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
 
 /* ---------- parchment surface ---------- */
 .parchment {
