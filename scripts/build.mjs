@@ -80,6 +80,8 @@ function readmeHtml(mod, mdk) {
       if (t.depth === 1 && !sawH1) { sawH1 = true; continue; }
     }
     if (skipping) continue;
+    // the "Dxcufgb's Workshop" promo badge links here, so leave it off the site
+    if ((t.type === "paragraph" || t.type === "html") && /workshop-badge\.png/.test(t.raw)) continue;
     if (t.type === "paragraph" && t.raw.replace(/\[!\[[^\]]*\]\([^)]*\)\]\([^)]*\)|!\[[^\]]*\]\([^)]*\)|\\|\s/g, "") === "") continue;
     kept.push(t);
   }
