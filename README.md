@@ -108,11 +108,20 @@ YouTube descriptions can't show images, so use a text line there:
 
 ## Rebuild right after a release (optional)
 
-The 6-hour schedule is usually enough. For an instant update, add a step at the end of a module's release workflow. It needs a fine-grained token with **Contents: read and write** on the site repo, saved as the secret `SITE_DISPATCH_TOKEN` in the module repo:
+The 6-hour schedule is the fallback. Every listed project's release workflow asks the site to rebuild as soon as the release is published, with a `module-released` repository dispatch (payload `repository` and `tag`). Modules get this from the shared release action in [`dxcufgb/foundry-module-ci`](https://github.com/dxcufgb/foundry-module-ci) (input `site-dispatch-token`); the Discord bot and the server tools have a `site` job at the end of their own `release.yml`.
+
+It needs one token, saved in every project repo:
+
+1. Create a [fine-grained personal access token](https://github.com/settings/personal-access-tokens/new): **Repository access → Only select repositories → `dxcufgb/FVTT-dev-showcase`**, **Repository permissions → Contents: Read and write** (what a repository dispatch needs), nothing else.
+2. Save it as the secret `SITE_DISPATCH_TOKEN` in each project repo, for example with `gh secret set SITE_DISPATCH_TOKEN -R dxcufgb/<repo>` (it reads the value from the prompt).
+
+A repo without the secret releases exactly as before and appears at the next scheduled build. An expired token only shows up as a warning on the release run.
+
+A new project picks this up from the same template; a release workflow of its own can send the ping like this:
 
 ```yaml
-- name: Refresh the module site
-  run: gh api repos/dxcufgb/dxcufgb.github.io/dispatches -f event_type=module-released
+- name: Ask the Workshop site to rebuild
+  run: gh api --method POST repos/dxcufgb/FVTT-dev-showcase/dispatches -f event_type=module-released
   env:
     GH_TOKEN: ${{ secrets.SITE_DISPATCH_TOKEN }}
 ```
