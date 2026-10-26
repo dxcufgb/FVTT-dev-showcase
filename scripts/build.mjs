@@ -154,6 +154,8 @@ for (const m of data.modules) {
 }
 
 // ---------- layout ----------
+// "Opens another site in a new tab": an arrow out of a box, plus the same words for screen readers.
+const EXTERNAL = `<svg class="ext-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M9.5 2.5h4v4M13.25 2.75 7.5 8.5M11.5 9.5v3.25a.75.75 0 0 1-.75.75h-7.5a.75.75 0 0 1-.75-.75v-7.5a.75.75 0 0 1 .75-.75H6.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr-only"> (opens in a new tab)</span>`;
 const SIGIL = `<svg class="sigil" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 3 58 18v28L32 61 6 46V18Z" fill="none" stroke="currentColor" stroke-width="3"/><path d="M32 13 49 23v18L32 51 15 41V23Z" fill="currentColor" opacity=".18"/><path d="M32 13v38M15 23l34 18M49 23 15 41" stroke="currentColor" stroke-width="2" opacity=".55"/></svg>`;
 
 function layout({ title, description, depth, active, body, image }) {
@@ -186,8 +188,8 @@ ${image ? `<meta property="og:image" content="${esc(image)}">` : ""}
   <nav aria-label="Main">
     ${nav("", "Releases", "home")}
     ${nav(`${DIR}/`, "Projects", "projects")}
-    <a href="https://www.youtube.com/playlist?list=${esc(config.youtubePlaylist)}" rel="noopener" target="_blank">Videos</a>
-    <a href="https://github.com/${OWNER}" rel="noopener" target="_blank">GitHub</a>
+    <a class="ext" href="https://www.youtube.com/playlist?list=${esc(config.youtubePlaylist)}" rel="noopener" target="_blank">Videos${EXTERNAL}</a>
+    <a class="ext" href="https://github.com/${OWNER}" rel="noopener" target="_blank">GitHub${EXTERNAL}</a>
   </nav>
 </header>
 <main id="main">
