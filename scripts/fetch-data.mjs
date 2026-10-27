@@ -114,8 +114,17 @@ async function playlistVideos(playlistId) {
     } while (pageToken);
     if (videos.length) return videos;
   }
-  const xml = await text(`https://www.youtube.com/feeds/videos.xml?playlist_id=${playlistId}`);
-  if (!xml) { warn("could not read the playlist feed; only videos set in site.config.json will show"); return []; }
+  // YouTube often refuses this feed from cloud servers such as GitHub's runners, and it lists only the 15 newest
+  // videos, so videos pinned in site.config.json are the dependable way to link them.
+  let xml = null;
+  try {
+    const res = await fetch(`https://www.youtube.com/feeds/videos.xml?playlist_id=${playlistId}`, {
+      headers: { "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36", "Accept-Language": "en" },
+    });
+    if (res.ok) xml = await res.text();
+    else warn(`the playlist feed answered HTTP ${res.status}; only videos set in site.config.json will show`);
+  } catch (e) { warn(`could not reach the playlist feed (${e.message}); only videos set in site.config.json will show`); }
+  if (!xml) return [];
   const decode = (s) => s.replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
   return [...xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)].map(([, e]) => ({
     id: /<yt:videoId>([^<]+)/.exec(e)?.[1],

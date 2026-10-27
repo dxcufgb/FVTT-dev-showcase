@@ -21,16 +21,10 @@
   ],
 
   "projects": {
-    "FoundryVTT-dice-trails": {
+    "FoundryVTT-canvas-effects": {
       "videos": {
-        "demo": "https://youtu.be/cyVdHcMwvkg",
-        "tutorial": "https://youtu.be/XLAXbURu2t8"
-      }
-    },
-    "FoundryVTT-reminders": {
-      "videos": {
-        "demo": "https://youtu.be/JYNjwKPfEEc",
-        "tutorial": "https://youtu.be/EoMTPv80Imw"
+        "demo": "https://youtu.be/BMR9HKO77Hw",
+        "tutorial": "https://youtu.be/LPMSZoxwo4w"
       }
     },
     "FoundryVTT-death-trigger": {
@@ -39,10 +33,62 @@
         "tutorial": "https://youtu.be/Ihq5xm81Qzg"
       }
     },
+    "FoundryVTT-dice-trails": {
+      "videos": {
+        "demo": "https://youtu.be/cyVdHcMwvkg",
+        "tutorial": "https://youtu.be/XLAXbURu2t8"
+      }
+    },
     "FoundryVTT-linguistic-chat": {
       "stripReadmeSections": [
         "Known PoC limitations"
-      ]
+      ],
+      "videos": {
+        "demo": "https://youtu.be/dI1MZuJ2_Wg",
+        "tutorial": "https://youtu.be/muhosOzmCbI"
+      }
+    },
+    "FoundryVTT-lively-tokens": {
+      "videos": {
+        "demo": "https://youtu.be/Z5OJ6dHynes",
+        "tutorial": "https://youtu.be/ZJlujsjy3aE"
+      }
+    },
+    "FoundryVTT-reminders": {
+      "videos": {
+        "demo": "https://youtu.be/JYNjwKPfEEc",
+        "tutorial": "https://youtu.be/EoMTPv80Imw"
+      }
+    },
+    "FoundryVTT-scenario-soundtracks": {
+      "videos": {
+        "demo": "https://youtu.be/LIYe0Ki_LhI",
+        "tutorial": "https://youtu.be/QRNx1XvK-sI"
+      }
+    },
+    "FoundryVTT-screen-effects": {
+      "videos": {
+        "demo": "https://youtu.be/QpW7_fUExho",
+        "tutorial": "https://youtu.be/Fq-LH5GroyI"
+      }
+    },
+    "FoundryVTT-tile-triggers": {
+      "videos": {
+        "demo": "https://youtu.be/YcK0XLomrlY",
+        "tutorial": "https://youtu.be/CsSXFvGfB8w"
+      }
+    },
+    "FoundryVTT-token-context-menu": {
+      "videos": {
+        "demo": "https://youtu.be/tSw3OQAmFAo",
+        "tutorial": "https://youtu.be/QmKnVpSMDlQ"
+      }
+    },
+    "FoundryVTT-token-follower": {
+      "videos": {
+        "demo": "https://youtu.be/l7SCl6og1hA",
+        "tutorial": "https://youtu.be/Tfq6R7GTJTs"
+      }
     },
     "FoundryVTT-session-summary": {
       "wip": true
