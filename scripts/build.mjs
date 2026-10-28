@@ -135,8 +135,13 @@ for (const m of data.modules) {
     .replace(/\s*\([^)]*\)/g, "")
     .split(/(?<=[.!?])\s+|:\s+/)[0]
     .replace(/[.:]$/, "") + ".";
+  // Until the first release, the version in module.json is only planned and the
+  // manifest link (releases/latest) does not resolve yet.
+  const released = m.releases.length > 0;
   modules.push({
     ...m,
+    ...(released ? {} : { version: null }),
+    installable: !!m.manifest && released,
     ...(over.description ? { description: over.description } : {}),
     kind: over.kind || (m.isModule === false ? "Project" : "Foundry VTT module"),
     details: over.details || {},
@@ -383,7 +388,7 @@ function statBlock(mod) {
     ${line("Works with", rel(mod.recommends))}
     ${line("License", esc(mod.license || ""))}
   </dl>` : ""}
-  ${mod.manifest ? `<h3>Install</h3>
+  ${mod.installable ? `<h3>Install</h3>
   <p class="install-help">In Foundry, open <b>Add-on Modules</b>, choose <b>Install Module</b> and paste this into <b>Manifest URL</b>.</p>
   <div class="manifest"><input readonly value="${esc(mod.manifest)}" aria-label="Manifest URL" id="manifest-${esc(mod.slug)}"><button type="button" class="copy" data-copy="#manifest-${esc(mod.slug)}">Copy</button></div>` : ""}
   <h3>Links</h3>

@@ -117,6 +117,16 @@
       "details": {
         "Hosting": "Self-hosted Foundry only"
       }
+    },
+    "FoundryVTT-quest-log": {
+      "wip": true
+    },
+    "FoundryVTT-Familiar-Faces": {
+      "include": true,
+      "wip": true,
+      "kind": "Foundry VTT module",
+      "title": "Familiar Faces",
+      "description": "A sidebar tab of the NPCs the party has met. The GM adds NPCs by right-clicking a name in a journal and binds portraits by right-clicking journal images; players keep private or shared notes on each NPC, with the place they met them."
     }
   }
 }
