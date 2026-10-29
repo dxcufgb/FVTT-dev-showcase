@@ -119,10 +119,18 @@
       }
     },
     "FoundryVTT-quest-log": {
-      "wip": true
+      "wip": true,
+      "videos": {
+        "demo": "https://youtu.be/fTDv0SHS-nw",
+        "tutorial": "https://youtu.be/0ywSDtw-VWw"
+      }
     },
     "FoundryVTT-Familiar-Faces": {
-      "wip": true
+      "wip": true,
+      "videos": {
+        "demo": "https://youtu.be/OvZDMHkjP9Y",
+        "tutorial": "https://youtu.be/de6MP3CnM1g"
+      }
     }
   }
 }
