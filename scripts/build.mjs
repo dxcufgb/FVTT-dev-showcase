@@ -143,6 +143,8 @@ for (const m of data.modules) {
     ...(released ? {} : { version: null }),
     installable: !!m.manifest && released,
     ...(over.description ? { description: over.description } : {}),
+    // "wiki": false hides the link, a URL replaces it; otherwise it shows when the repo's wiki has pages
+    wikiUrl: over.wiki === false ? null : typeof over.wiki === "string" ? over.wiki : m.wiki ? `${m.url}/wiki` : null,
     kind: over.kind || (m.isModule === false ? "Project" : "Foundry VTT module"),
     details: over.details || {},
     summary,
@@ -393,6 +395,7 @@ function statBlock(mod) {
   <div class="manifest"><input readonly value="${esc(mod.manifest)}" aria-label="Manifest URL" id="manifest-${esc(mod.slug)}"><button type="button" class="copy" data-copy="#manifest-${esc(mod.slug)}">Copy</button></div>` : ""}
   <h3>Links</h3>
   ${mod.notPublic ? `<p class="install-help">The source is not public yet. Follow the <a href="https://github.com/${OWNER}" rel="noopener" target="_blank">GitHub profile</a> to see it when it is.</p>` : `<ul class="links">
+    ${mod.wikiUrl ? `<li><a href="${esc(mod.wikiUrl)}" rel="noopener" target="_blank">Guides on the wiki</a></li>` : ""}
     <li><a href="${esc(mod.url)}" rel="noopener" target="_blank">Source on GitHub</a></li>
     <li><a href="${esc(mod.url)}/issues" rel="noopener" target="_blank">Report a bug</a></li>
     <li><a href="${esc(mod.url)}/releases" rel="noopener" target="_blank">All releases</a></li>

@@ -13,6 +13,25 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+
+const run = promisify(execFile);
+
+// GitHub's API only says whether the wiki is switched on, not whether it has pages.
+// A wiki with pages is a git repository of its own, so ask git whether it exists.
+async function hasWikiPages(repo) {
+  if (!repo.has_wiki || repo.private) return false;
+  try {
+    const { stdout } = await run("git", ["ls-remote", "--heads", `https://github.com/${OWNER}/${repo.name}.wiki.git`], {
+      timeout: 20000,
+      env: { ...process.env, GIT_TERMINAL_PROMPT: "0" },
+    });
+    return stdout.trim().length > 0;
+  } catch {
+    return false;
+  }
+}
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const config = JSON.parse(await readFile(path.join(ROOT, "site.config.json"), "utf8"));
@@ -206,6 +225,7 @@ for (const repo of repos) {
     compatibility: m.compatibility || {},
     manifest: m.manifest || null,
     url: repo.html_url,
+    wiki: await hasWikiPages(repo),
     branch,
     topics: repo.topics || [],
     createdAt: repo.created_at,

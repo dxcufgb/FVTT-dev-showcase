@@ -24,6 +24,7 @@ What the site uses from the module repo:
 | Changelog | The matching `## 1.2.3` section in `CHANGELOG.md`, otherwise the GitHub release notes |
 | Module page text | `README.md`, without its title, badges and the sections listed in `stripReadmeSections` |
 | Videos | The YouTube playlist (see below) |
+| Wiki link | Shown in the page's Links box when the repo's GitHub wiki has pages (`"wiki": false` in the config hides it, a URL replaces it) |
 
 The title prefix `Dxcufgb's` is dropped and the rest is title-cased, so `Dxcufgb's lively tokens` shows as **Lively Tokens**. Page URLs drop the `dxcufgbs-` id prefix: `/projects/lively-tokens/`.
 
