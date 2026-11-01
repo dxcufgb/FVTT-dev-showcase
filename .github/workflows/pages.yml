@@ -8,6 +8,7 @@ on:
   workflow_dispatch:            # "Run workflow" button in the Actions tab
   repository_dispatch:
     types: [module-released]    # optional ping from a module's release workflow
+  pull_request:                 # tests and a trial build; nothing is deployed
 
 permissions:
   contents: read
@@ -15,7 +16,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.ref) || 'pages' }}
   cancel-in-progress: true
 
 jobs:
@@ -30,20 +31,24 @@ jobs:
       - id: pages
         uses: actions/configure-pages@v5
       - run: npm ci
+      - name: Test
+        run: npm test
       - name: Collect module data
         run: npm run fetch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
-      - name: Build pages
+      - name: Build pages and social images
         run: npm run build
         env:
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          SITE_URL: ${{ steps.pages.outputs.base_url }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
 
   deploy:
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:

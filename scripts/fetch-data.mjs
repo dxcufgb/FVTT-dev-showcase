@@ -10,7 +10,8 @@
 //   YOUTUBE_API_KEY          optional; without it the playlist RSS feed is used
 //                            (that feed only lists the newest 15 videos)
 
-import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { readFile, writeFile, mkdir, mkdtemp, readdir, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { execFile } from "node:child_process";
@@ -18,18 +19,45 @@ import { promisify } from "node:util";
 
 const run = promisify(execFile);
 
-// GitHub's API only says whether the wiki is switched on, not whether it has pages.
-// A wiki with pages is a git repository of its own, so ask git whether it exists.
-async function hasWikiPages(repo) {
-  if (!repo.has_wiki || repo.private) return false;
+// A wiki with pages is a git repository of its own (<repo>.wiki.git). Clone it to
+// mirror its pages on the site: search engines do not index GitHub wikis.
+async function fetchWiki(repo) {
+  if (!repo.has_wiki || repo.private) return null;
+  const dir = await mkdtemp(path.join(tmpdir(), "wiki-"));
+  const git = (args, opts = {}) => run("git", args, { timeout: 60000, env: { ...process.env, GIT_TERMINAL_PROMPT: "0" }, ...opts });
   try {
-    const { stdout } = await run("git", ["ls-remote", "--heads", `https://github.com/${OWNER}/${repo.name}.wiki.git`], {
-      timeout: 20000,
-      env: { ...process.env, GIT_TERMINAL_PROMPT: "0" },
-    });
-    return stdout.trim().length > 0;
+    await git(["clone", "--quiet", "--depth", "200", `https://github.com/${OWNER}/${repo.name}.wiki.git`, dir]);
+    const files = (await readdir(dir)).filter((f) => /\.(md|markdown)$/i.test(f));
+    if (!files.length) return null;
+    const pages = [];
+    for (const f of files) {
+      const name = f.replace(/\.(md|markdown)$/i, "");
+      const md = await readFile(path.join(dir, f), "utf8");
+      let updated = null;
+      try { updated = (await git(["log", "-1", "--format=%cI", "--", f], { cwd: dir })).stdout.trim() || null; } catch {}
+      pages.push({ name, md, updated });
+    }
+    log(`  wiki: ${pages.filter((p) => !p.name.startsWith("_")).length} pages`);
+    return pages;
   } catch {
-    return false;
+    return null; // no wiki pages, or the wiki is unreachable
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+}
+
+// The foundryvtt.com package page, if the module is listed there. The site may refuse
+// automated requests, so anything but a clear answer counts as "not listed";
+// "foundryPackage" in site.config.json overrides it.
+async function foundryPackagePage(id) {
+  const url = `https://foundryvtt.com/packages/${encodeURIComponent(id)}`;
+  try {
+    const res = await fetch(url, { headers: { "User-Agent": `${OWNER}-module-site` }, signal: AbortSignal.timeout(10000) });
+    if (!res.ok) return null;
+    const html = await res.text();
+    return /Not Found \(404\)/i.test(html) ? null : url;
+  } catch {
+    return null;
   }
 }
 
@@ -225,7 +253,9 @@ for (const repo of repos) {
     compatibility: m.compatibility || {},
     manifest: m.manifest || null,
     url: repo.html_url,
-    wiki: await hasWikiPages(repo),
+    wikiPages: await fetchWiki(repo),
+    foundryPackage: isModule ? await foundryPackagePage(m.id) : null,
+    pushedAt: repo.pushed_at,
     branch,
     topics: repo.topics || [],
     createdAt: repo.created_at,
@@ -278,7 +308,7 @@ for (const [name, p] of Object.entries(PROJECTS)) {
     id: projectSlug(name), title, shortTitle: title,
     description: p.description || "", version: null, compatibility: {}, manifest: null,
     url: `https://github.com/${OWNER}/${name}`, branch: "main", topics: [], createdAt: null, license: null,
-    requires: [], recommends: [], systems: [], downloads: null, readme: null, releases: [],
+    requires: [], recommends: [], systems: [], downloads: null, readme: null, releases: [], wikiPages: null, foundryPackage: null,
   });
   log(`${title} — not public yet, listed from site.config.json`);
 }
