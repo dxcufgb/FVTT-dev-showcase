@@ -255,6 +255,14 @@ h1, h2, h3 { line-height: 1.15; text-wrap: balance; }
   height: 100%; display: grid; place-items: center; position: relative; color: var(--ember);
   background: radial-gradient(circle at 50% 45%, #3a2a20, var(--slate-2) 70%);
 }
+.card-logo {
+  position: relative; height: 100%;
+  background: radial-gradient(circle at 50% 45%, #3a2a20, var(--slate-2) 70%);
+}
+.card-media .card-logo img {
+  position: absolute; inset: 0; margin: auto;
+  width: auto; height: 80%; max-width: 90%; object-fit: contain;
+}
 .card-sigil .sigil { width: 46%; height: auto; opacity: .55; }
 .card-sigil span { position: absolute; font: 800 2.4rem/1 var(--font-sc); color: var(--parchment); text-shadow: 0 2px 0 #000; }
 .card-body { padding: 14px 18px 16px; display: flex; flex-direction: column; flex: 1; }

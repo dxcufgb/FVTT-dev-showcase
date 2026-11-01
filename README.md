@@ -33,6 +33,7 @@ The title prefix `Dxcufgb's` is dropped and the rest is title-cased, so `Dxcufgb
 All optional. `<slug>` is the module id without `dxcufgbs-`, for example `lively-tokens`.
 
 - **Card image:** add `assets/modules/<slug>.webp` (or `.png`, `.jpg`, `.gif`), 16:9. Without one, the card uses the YouTube video thumbnail, and without a video a drawn sigil.
+- **Card logo:** add `assets/modules/<slug>-logo.png` (or `.svg`, `.webp`) with a transparent background. It is shown centred on the card's default dark background instead of filling the card. Set `"logo"` in the config to use another file or a link.
 - **Page text:** add `content/<slug>.md` to replace the README on the module page.
 - **Settings:** add an entry under `projects` in `site.config.json`, keyed by the repo name:
 

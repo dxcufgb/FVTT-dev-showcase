@@ -2,7 +2,8 @@
 // Renders the static site into _site/ from data/site-data.json + site.config.json.
 //
 // Per-module extras, all optional:
-//   assets/modules/<slug>.(webp|png|jpg|jpeg|gif)  card + header image
+//   assets/modules/<slug>.(webp|png|jpg|jpeg|gif)  card image (fills the card)
+//   assets/modules/<slug>-logo.(png|svg|webp)      card logo (centred on the default background)
 //   content/<slug>.md                              replaces the README on the module page
 //   site.config.json → projects["<repo>"]           include, kind, title, summary, description, image, videos,
 //                                                   wip, details, stripReadmeSections, hidden
@@ -138,8 +139,16 @@ for (const m of data.modules) {
   // Until the first release, the version in module.json is only planned and the
   // manifest link (releases/latest) does not resolve yet.
   const released = m.releases.length > 0;
+  // A logo (transparent PNG/SVG/WebP) sits centred on the card's default background
+  // instead of filling the card like a screenshot. "logo" in the config, or
+  // assets/modules/<slug>-logo.(png|svg|webp) by name.
+  let logo = over.logo || null;
+  for (const ext of ["png", "svg", "webp"]) {
+    if (!logo && (await exists(path.join(ROOT, "assets", "modules", `${slug}-logo.${ext}`)))) logo = `assets/modules/${slug}-logo.${ext}`;
+  }
   modules.push({
     ...m,
+    logo,
     ...(released ? {} : { version: null }),
     installable: !!m.manifest && released,
     ...(over.description ? { description: over.description } : {}),
@@ -217,6 +226,8 @@ const wipBadge = (mod) =>
   mod.wip ? `<span class="wip" title="${esc(mod.wip.note || WIP_TEXT)}">${ANVIL}WIP</span>` : "";
 
 function cardImage(mod, base) {
+  const src = (p) => esc(p.startsWith("http") ? p : base + p);
+  if (mod.logo) return `<div class="card-logo"><img src="${src(mod.logo)}" alt="" loading="lazy"></div>`;
   if (mod.image) return `<img src="${esc(mod.image.startsWith("http") ? mod.image : base + mod.image)}" alt="" loading="lazy">`;
   if (mod.thumb) return `<img src="${esc(mod.thumb)}" data-fallback="${esc(mod.thumbFallback)}" alt="" loading="lazy">`;
   return `<div class="card-sigil">${SIGIL}<span>${esc(mod.shortTitle.split(" ").map((w) => w[0]).join(""))}</span></div>`;
