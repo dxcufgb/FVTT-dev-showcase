@@ -21,9 +21,9 @@
   --blood: #922610;          /* stat block red */
   --gold: #e3a43a;           /* stat block bars */
 
-  --font-ui: "Signika", "Segoe UI", system-ui, sans-serif;
-  --font-book: "Alegreya", Georgia, serif;
-  --font-sc: "Alegreya SC", "Alegreya", Georgia, serif;
+  --font-ui: "Signika", "Signika Fallback", "Segoe UI", system-ui, sans-serif;
+  --font-book: "Alegreya", "Alegreya Fallback", Georgia, serif;
+  --font-sc: "Alegreya SC", "Alegreya SC Fallback", "Alegreya", Georgia, serif;
 
   --step--1: .875rem;
   --step-0: 1.0625rem;
@@ -38,6 +38,22 @@
   --r-chrome: 6px;           /* Foundry UI elements */
   --r-page: 2px;             /* parchment pages barely round */
 }
+
+/* Stand-ins sized like the web fonts, so the page doesn't jump when they arrive
+   (Core Web Vitals: layout shift). Measured against Times New Roman / Arial
+   (and their metric twins Liberation, Tinos, Arimo) on an English sample text. */
+@font-face { font-family: "Alegreya Fallback"; font-weight: 100 599; src: local("Times New Roman"), local("TimesNewRomanPSMT"), local("Liberation Serif"), local("Tinos");
+  size-adjust: 100.37%; ascent-override: 101.23%; descent-override: 34.37%; line-gap-override: 0%; }
+@font-face { font-family: "Alegreya Fallback"; font-weight: 600 900; src: local("Times New Roman Bold"), local("TimesNewRomanPS-BoldMT"), local("Liberation Serif Bold"), local("Tinos Bold");
+  size-adjust: 96.14%; ascent-override: 105.68%; descent-override: 35.88%; line-gap-override: 0%; }
+@font-face { font-family: "Alegreya SC Fallback"; font-weight: 100 599; src: local("Times New Roman"), local("TimesNewRomanPSMT"), local("Liberation Serif"), local("Tinos");
+  size-adjust: 115.15%; ascent-override: 88.23%; descent-override: 29.96%; line-gap-override: 0%; }
+@font-face { font-family: "Alegreya SC Fallback"; font-weight: 600 900; src: local("Times New Roman Bold"), local("TimesNewRomanPS-BoldMT"), local("Liberation Serif Bold"), local("Tinos Bold");
+  size-adjust: 109.08%; ascent-override: 93.14%; descent-override: 31.63%; line-gap-override: 0%; }
+@font-face { font-family: "Signika Fallback"; font-weight: 100 449; src: local("Arial"), local("ArialMT"), local("Liberation Sans"), local("Arimo");
+  size-adjust: 95.59%; ascent-override: 98.34%; descent-override: 30.55%; line-gap-override: 0%; }
+@font-face { font-family: "Signika Fallback"; font-weight: 450 900; src: local("Arial Bold"), local("Arial-BoldMT"), local("Liberation Sans Bold"), local("Arimo Bold");
+  size-adjust: 88.6%; ascent-override: 106.09%; descent-override: 32.96%; line-gap-override: 0%; }
 
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-padding-top: 80px; }
@@ -434,3 +450,29 @@ h1, h2, h3 { line-height: 1.15; text-wrap: balance; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }
 }
+
+/* ---------- project index (home) and related projects (project pages) ---------- */
+.all-projects, .related { margin-top: clamp(40px, 6vw, 64px); }
+.project-index {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 8px 40px;
+  padding: clamp(18px, 3vw, 28px); border-top: 4px solid var(--gold); border-bottom: 4px solid var(--gold);
+}
+.index-group h3 {
+  margin: 0 0 8px; padding-bottom: 4px; border-bottom: 2px solid var(--gold);
+  font: 700 var(--step-1)/1.2 var(--font-sc); color: var(--blood);
+}
+.index-group ul { list-style: none; margin: 0 0 16px; padding: 0; }
+.index-group li { padding: 7px 0; border-bottom: 1px solid rgba(107, 90, 72, .2); }
+.index-group li:last-child { border-bottom: 0; }
+.index-group li > a { font-weight: 700; }
+.index-summary { display: block; margin-top: 2px; color: var(--ink-dim); font-size: .95em; line-height: 1.4; }
+
+.related-list {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 18px;
+}
+.related-list li { padding: 16px 18px; border-top: 4px solid var(--gold); }
+.related-list li > a { font: 700 var(--step-1)/1.2 var(--font-sc); }
+.related-list p { margin: 6px 0 0; color: var(--ink-dim); line-height: 1.45; }
+
+.source-note { margin: 24px 0 0; font-size: .92em; color: var(--ink-dim); font-style: italic; }

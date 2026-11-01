@@ -4,6 +4,12 @@
   "tagline": "Projects for Foundry VTT, tested in real sessions.",
   "kofi": "https://ko-fi.com/dxcufgb",
   "youtubePlaylist": "PLcshfuJI5rbM",
+  "youtubeChannel": "https://www.youtube.com/channel/UChyt61fz61WRAnG9geQK9hw",
+  "siteUrl": "https://dxcufgb.github.io/FVTT-dev-showcase/",
+  "verification": {
+    "google": "",
+    "bing": ""
+  },
   "latestReleaseCount": 10,
 
   "titlePrefix": "^Dxcufgb'?s\\s+",
@@ -23,20 +29,50 @@
   "projects": {
     "FoundryVTT-canvas-effects": {
       "videos": {
-        "demo": "https://youtu.be/BMR9HKO77Hw",
-        "tutorial": "https://youtu.be/LPMSZoxwo4w"
+        "demo": {
+          "url": "https://youtu.be/BMR9HKO77Hw",
+          "title": "FoundryVTT V13 Module: Canvas Effects - demo",
+          "uploadDate": "2026-10-25T11:39:58-07:00",
+          "duration": 94
+        },
+        "tutorial": {
+          "url": "https://youtu.be/LPMSZoxwo4w",
+          "title": "FoundryVTT V13 Module: Canvas Effects - Tutorial",
+          "uploadDate": "2026-10-25T11:51:44-07:00",
+          "duration": 351
+        }
       }
     },
     "FoundryVTT-death-trigger": {
       "videos": {
-        "demo": "https://youtu.be/1_IfXjIs74s",
-        "tutorial": "https://youtu.be/Ihq5xm81Qzg"
+        "demo": {
+          "url": "https://youtu.be/1_IfXjIs74s",
+          "title": "FoundryVTT V13 Module: Death Trigger - Demo",
+          "uploadDate": "2026-10-25T16:10:46-07:00",
+          "duration": 64
+        },
+        "tutorial": {
+          "url": "https://youtu.be/Ihq5xm81Qzg",
+          "title": "FoundryVTT V13 Module: Death Trigger Alerts - Tutorial",
+          "uploadDate": "2026-10-25T16:12:04-07:00",
+          "duration": 219
+        }
       }
     },
     "FoundryVTT-dice-trails": {
       "videos": {
-        "demo": "https://youtu.be/cyVdHcMwvkg",
-        "tutorial": "https://youtu.be/XLAXbURu2t8"
+        "demo": {
+          "url": "https://youtu.be/cyVdHcMwvkg",
+          "title": "FoundryVTT V13 Module: Dice Trails - Demo",
+          "uploadDate": "2026-10-25T16:14:05-07:00",
+          "duration": 88
+        },
+        "tutorial": {
+          "url": "https://youtu.be/XLAXbURu2t8",
+          "title": "FoundryVTT V13 Module: Dice Trails - Tutorial",
+          "uploadDate": "2026-10-25T16:15:22-07:00",
+          "duration": 377
+        }
       }
     },
     "FoundryVTT-linguistic-chat": {
@@ -44,50 +80,130 @@
         "Known PoC limitations"
       ],
       "videos": {
-        "demo": "https://youtu.be/dI1MZuJ2_Wg",
-        "tutorial": "https://youtu.be/muhosOzmCbI"
+        "demo": {
+          "url": "https://youtu.be/dI1MZuJ2_Wg",
+          "title": "FoundryVTT V13 Module: Linguistic Chat - Demo",
+          "uploadDate": "2026-10-25T15:32:02-07:00",
+          "duration": 73
+        },
+        "tutorial": {
+          "url": "https://youtu.be/muhosOzmCbI",
+          "title": "FoundryVTT V13 Module: Linguistic Chat - Tutorial",
+          "uploadDate": "2026-10-25T15:33:53-07:00",
+          "duration": 236
+        }
       }
     },
     "FoundryVTT-lively-tokens": {
       "videos": {
-        "demo": "https://youtu.be/Z5OJ6dHynes",
-        "tutorial": "https://youtu.be/ZJlujsjy3aE"
+        "demo": {
+          "url": "https://youtu.be/Z5OJ6dHynes",
+          "title": "FoundryVTT V13 Module: Lively Tokens - Demo",
+          "uploadDate": "2026-10-23T13:30:51-07:00",
+          "duration": 88
+        },
+        "tutorial": {
+          "url": "https://youtu.be/ZJlujsjy3aE",
+          "title": "FoundryVTT V13 Module: Lively Tokens - Tutorial",
+          "uploadDate": "2026-10-23T13:32:08-07:00",
+          "duration": 366
+        }
       }
     },
     "FoundryVTT-reminders": {
       "videos": {
-        "demo": "https://youtu.be/JYNjwKPfEEc",
-        "tutorial": "https://youtu.be/EoMTPv80Imw"
+        "demo": {
+          "url": "https://youtu.be/JYNjwKPfEEc",
+          "title": "FoundryVTT V13 Module: Reminders - Demo",
+          "uploadDate": "2026-10-25T16:17:09-07:00",
+          "duration": 63
+        },
+        "tutorial": {
+          "url": "https://youtu.be/EoMTPv80Imw",
+          "title": "FoundryVTT V13 Module: Reminders - Tutorial",
+          "uploadDate": "2026-10-25T16:18:40-07:00",
+          "duration": 304
+        }
       }
     },
     "FoundryVTT-scenario-soundtracks": {
       "videos": {
-        "demo": "https://youtu.be/LIYe0Ki_LhI",
-        "tutorial": "https://youtu.be/QRNx1XvK-sI"
+        "demo": {
+          "url": "https://youtu.be/LIYe0Ki_LhI",
+          "title": "FoundryVTT V13 Module: Scenario Soundtracks - Demo",
+          "uploadDate": "2026-10-25T14:25:00-07:00",
+          "duration": 92
+        },
+        "tutorial": {
+          "url": "https://youtu.be/QRNx1XvK-sI",
+          "title": "FoundryVTT V13 Module: Scenario Soundtracks - Tutorial",
+          "uploadDate": "2026-10-25T14:26:28-07:00",
+          "duration": 337
+        }
       }
     },
     "FoundryVTT-screen-effects": {
       "videos": {
-        "demo": "https://youtu.be/QpW7_fUExho",
-        "tutorial": "https://youtu.be/Fq-LH5GroyI"
+        "demo": {
+          "url": "https://youtu.be/QpW7_fUExho",
+          "title": "FoundryVTT V13 Module: Screen effects - Demo",
+          "uploadDate": "2026-10-25T15:39:38-07:00",
+          "duration": 83
+        },
+        "tutorial": {
+          "url": "https://youtu.be/Fq-LH5GroyI",
+          "title": "FoundryVTT V13 Module: Screen Effects - Tutorial",
+          "uploadDate": "2026-10-25T15:40:46-07:00",
+          "duration": 247
+        }
       }
     },
     "FoundryVTT-tile-triggers": {
       "videos": {
-        "demo": "https://youtu.be/YcK0XLomrlY",
-        "tutorial": "https://youtu.be/CsSXFvGfB8w"
+        "demo": {
+          "url": "https://youtu.be/YcK0XLomrlY",
+          "title": "FoundryVTT V13 Module: Tile Triggers - Demo",
+          "uploadDate": "2026-10-25T12:43:29-07:00",
+          "duration": 64
+        },
+        "tutorial": {
+          "url": "https://youtu.be/CsSXFvGfB8w",
+          "title": "FoundryVTT V13 Module: Tile Triggers - Tutorial",
+          "uploadDate": "2026-10-25T12:44:58-07:00",
+          "duration": 350
+        }
       }
     },
     "FoundryVTT-token-context-menu": {
       "videos": {
-        "demo": "https://youtu.be/tSw3OQAmFAo",
-        "tutorial": "https://youtu.be/QmKnVpSMDlQ"
+        "demo": {
+          "url": "https://youtu.be/tSw3OQAmFAo",
+          "title": "FoundryVTT V13 Module: Token Context Menu - demo",
+          "uploadDate": "2026-10-25T14:41:33-07:00",
+          "duration": 76
+        },
+        "tutorial": {
+          "url": "https://youtu.be/QmKnVpSMDlQ",
+          "title": "FoundryVTT V13 Module: Token Context Menu - Tutorial",
+          "uploadDate": "2026-10-25T14:45:00-07:00",
+          "duration": 218
+        }
       }
     },
     "FoundryVTT-token-follower": {
       "videos": {
-        "demo": "https://youtu.be/l7SCl6og1hA",
-        "tutorial": "https://youtu.be/Tfq6R7GTJTs"
+        "demo": {
+          "url": "https://youtu.be/l7SCl6og1hA",
+          "title": "FoundryVTT V13 Module: Token Follower - Demo",
+          "uploadDate": "2026-10-25T14:47:56-07:00",
+          "duration": 62
+        },
+        "tutorial": {
+          "url": "https://youtu.be/Tfq6R7GTJTs",
+          "title": "FoundryVTT V13 Module: Token Follower - Tutorial",
+          "uploadDate": "2026-10-25T14:49:14-07:00",
+          "duration": 150
+        }
       }
     },
     "FoundryVTT-session-summary": {
@@ -121,15 +237,35 @@
     "FoundryVTT-quest-log": {
       "wip": true,
       "videos": {
-        "demo": "https://youtu.be/fTDv0SHS-nw",
-        "tutorial": "https://youtu.be/0ywSDtw-VWw"
+        "demo": {
+          "url": "https://youtu.be/fTDv0SHS-nw",
+          "title": "FoundryVTT V13 Module: Quest Log - Demo",
+          "uploadDate": "2026-10-29T13:35:08-07:00",
+          "duration": 77
+        },
+        "tutorial": {
+          "url": "https://youtu.be/0ywSDtw-VWw",
+          "title": "FoundryVTT V13 Module: Quest Log - Tutorial",
+          "uploadDate": "2026-10-29T13:37:02-07:00",
+          "duration": 316
+        }
       }
     },
     "FoundryVTT-Familiar-Faces": {
       "wip": true,
       "videos": {
-        "demo": "https://youtu.be/OvZDMHkjP9Y",
-        "tutorial": "https://youtu.be/de6MP3CnM1g"
+        "demo": {
+          "url": "https://youtu.be/OvZDMHkjP9Y",
+          "title": "FoundryVTT V13 Module: Familiar Faces & Places - Demo",
+          "uploadDate": "2026-10-29T13:30:57-07:00",
+          "duration": 75
+        },
+        "tutorial": {
+          "url": "https://youtu.be/de6MP3CnM1g",
+          "title": "FoundryVTT V13 Module: Familiar Faces & Places - Tutorial",
+          "uploadDate": "2026-10-29T13:32:24-07:00",
+          "duration": 308
+        }
       }
     },
     "FoundryVTT-glowing-dice-cores": {

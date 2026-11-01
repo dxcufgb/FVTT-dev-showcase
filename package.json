@@ -5,11 +5,18 @@
   "description": "GitHub Pages site listing dxcufgb's Foundry VTT modules",
   "scripts": {
     "fetch": "node scripts/fetch-data.mjs",
-    "build": "node scripts/build.mjs",
+    "build": "node scripts/build.mjs && node scripts/og-images.mjs",
+    "test": "node --test test/*.test.mjs",
     "start": "npm run fetch && npm run build && npx --yes serve _site"
   },
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
-    "marked": "^15.0.0"
+    "@fontsource/alegreya": "^5.3.0",
+    "@fontsource/alegreya-sc": "^5.3.0",
+    "@fontsource/signika": "^5.3.0",
+    "marked": "^15.0.0",
+    "playwright-core": "^1.56.0"
   }
 }
