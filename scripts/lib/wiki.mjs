@@ -30,6 +30,7 @@ function leadParts(md, max, lists) {
     }
     for (const { isItem, text } of units) {
       if (isItem && !lists) continue;
+      if (/^(see|read)\b/i.test(text)) continue; // pointers to other pages say nothing about this one
       const t = inlineText(text);
       // a line ending in ":" introduces a list or code (": ." once its code is gone)
       if (!t || t.length < 3 || /:\s*\.?$/.test(t)) continue;
@@ -57,7 +58,8 @@ function inlineText(s) {
     .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
     .replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_, a, b) => b || a)
     .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
-    .replace(/[*_`]/g, "")
+    .replace(/[*`]/g, "")
+    .replace(/(?<!\w)_+|_+(?!\w)/g, "") // _emphasis_, but FOUNDRY_URL keeps its underscore
     .replace(/\s+/g, " ")
     .trim();
   return text;

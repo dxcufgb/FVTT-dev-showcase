@@ -72,8 +72,10 @@ function cutTo(text, max) {
 const endSentence = (s) => (/[.!?]$/.test(s) ? s : `${s}.`);
 
 // Dots inside words ("setup.exe", "v1.2") are not sentence ends.
-const sentences = (text) => (clean(text).replace(/(\w)\.(?=\w)/g, "$1\u2024").match(/[^.!?]+[.!?]+(?=\s|$)|[^.!?]+$/g) || [])
+const sentences = (text) => (clean(text).replace(/(\w|^|\s)\.(?=\w)/g, "$1\u2024").match(/[^.!?]+[.!?]+(?=\s|$)|[^.!?]+$/g) || [])
   .map((x) => x.trim().replace(/\u2024/g, "."));
+// a clause cut off before its end ("… with a", "… such as"); "going on" is fine
+const DANGLING = /\s(a|an|the|and|or|of|to|for|with|from|by|into|when|while|that|which|such as|as|its|their|your)$/i;
 const STOP = /\s+(a|an|and|or|the|of|to|for|in|on|at|by|with|from|into|as|when|while|that|which|who|its|their|your|his|her|is|are|was|be|can|will)$/i;
 
 // A sentence, then its opening clause (before a colon or dash) as a shorter stand-in.
@@ -83,7 +85,7 @@ function clauses(s) {
   const out = [s];
   const add = (c) => {
     c = c.replace(/[,;:\s]+$/, "");
-    if (STOP.test(c) || /\bsuch as$/i.test(c)) return; // "… when an NPC" is not a sentence
+    if (DANGLING.test(c)) return; // "… when an NPC" is not a sentence
     if (c !== s.replace(/[.!?]$/, "") && c.length > 25 && !out.includes(endSentence(c))) out.push(endSentence(c));
   };
   add(s.split(/:\s+| – /)[0]);
@@ -99,7 +101,8 @@ const pool = (...texts) => {
     // sentences about the docs themselves ("The full guide is in the wiki.")
     .filter((s) => !/\b(wiki|readme)\b|\bguide is\b|\bdocumentation\b/i.test(s))
     // placeholders, addresses and leftovers of removed code read badly out of context
-    .filter((s) => !/<[^>]*>|https?:\/\/|:\s*[.,]|^(then|and|or|but|so)\b/i.test(s))
+    // and a space before ")", "," or "." is where code was taken out ("keeps it under )")
+    .filter((s) => !/<[^>]*>|https?:\/\/|:\s*[.,]|\s[),.;:]|\(\s*\)|\S\/\S+\.\w{2,4}\b|^(then|and|or|but|so)\b/i.test(s))
     .filter((s) => { const k = s.toLowerCase(); if (seen.has(k)) return false; seen.add(k); return true; });
 };
 // first + more sentences from rest until the whole thing (with tail) reaches min, never past max
@@ -198,7 +201,7 @@ export function docsDescription(mod, pageTitle, leadTextOfPage, isIndex, pageNam
   return best || fill(`${pageTitle} for ${mod.shortTitle}, a free ${kind}.`, extra, "");
 }
 // "Settings: the settings are…", but keep "Settings: GM-only…" and names as written
-const lowerFirst = (t, prefix) => (prefix && /^[A-Z][a-z]+\b/.test(t) && !/^(I|Foundry|GitHub|Discord|Dice|Quest|Familiar|Lively|Tile|Token|Canvas|Screen|Scenario|Session|Linguistic|Reminders|Death|Patches|Spotify|YouTube)\b/.test(t) ? t[0].toLowerCase() + t.slice(1) : t);
+const lowerFirst = (t, prefix) => (prefix && /^[A-Z][a-z]+\b/.test(t) && !/^(I|Linux|Windows|Node|Docker|Chrome|Google|Bing|Foundry|GitHub|Discord|Dice|Quest|Familiar|Lively|Tile|Token|Canvas|Screen|Scenario|Session|Linguistic|Reminders|Death|Patches|Spotify|YouTube)\b/.test(t) ? t[0].toLowerCase() + t.slice(1) : t);
 
 // A list of names that fits in a sentence: "Dice Trails, Lively Tokens and Quest Log".
 export function listNames(names, max) {
