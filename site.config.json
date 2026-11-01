@@ -131,6 +131,9 @@
         "demo": "https://youtu.be/OvZDMHkjP9Y",
         "tutorial": "https://youtu.be/de6MP3CnM1g"
       }
+    },
+    "FoundryVTT-glowing-dice-cores": {
+      "wip": true
     }
   }
 }
