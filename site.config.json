@@ -270,6 +270,12 @@
     },
     "FoundryVTT-glowing-dice-cores": {
       "wip": true
+    },
+    "FoundryVTT-scene-transitions": {
+      "wip": true
+    },
+    "FoundryVTT-exploration-mode": {
+      "wip": true
     }
   }
 }
