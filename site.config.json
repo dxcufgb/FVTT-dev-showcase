@@ -207,7 +207,21 @@
       }
     },
     "FoundryVTT-session-summary": {
-      "wip": true
+      "wip": true,
+      "videos": {
+        "demo": {
+          "url": "https://youtu.be/0F_R0hpZsiQ",
+          "title": "FoundryVTT V13 Module: Session Summary - Demo",
+          "uploadDate": "2026-11-03T11:35:08-08:00",
+          "duration": 62
+        },
+        "tutorial": {
+          "url": "https://youtu.be/AqptDFiz1fY",
+          "title": "FoundryVTT V13 Module: Session Summary - Tutorial",
+          "uploadDate": "2026-11-03T11:36:26-08:00",
+          "duration": 206
+        }
+      }
     },
     "FoundryVTT-discord-integration": {
       "include": true,
@@ -272,10 +286,38 @@
       "wip": true
     },
     "FoundryVTT-scene-transitions": {
-      "wip": true
+      "wip": true,
+      "videos": {
+        "demo": {
+          "url": "https://youtu.be/UIn7ZXj-yyA",
+          "title": "FoundryVTT V13 Module: Scene Transitions - Demo",
+          "uploadDate": "2026-11-03T11:32:21-08:00",
+          "duration": 58
+        },
+        "tutorial": {
+          "url": "https://youtu.be/axkoqyzYX20",
+          "title": "FoundryVTT V13 Module: Scene Transitions - Tutorial",
+          "uploadDate": "2026-11-03T11:33:11-08:00",
+          "duration": 176
+        }
+      }
     },
     "FoundryVTT-exploration-mode": {
-      "wip": true
+      "wip": true,
+      "videos": {
+        "demo": {
+          "url": "https://youtu.be/UK80dA3uT_s",
+          "title": "FoundryVTT V13 Module: Exploration Mode - Demo",
+          "uploadDate": "2026-11-03T11:27:04-08:00",
+          "duration": 61
+        },
+        "tutorial": {
+          "url": "https://youtu.be/yVqgxh4oU0k",
+          "title": "FoundryVTT V13 Module: Exploration Mode - Tutorial",
+          "uploadDate": "2026-11-03T11:28:13-08:00",
+          "duration": 166
+        }
+      }
     }
   }
 }
