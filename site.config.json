@@ -318,6 +318,9 @@
           "duration": 166
         }
       }
+    },
+    "FoundryVTT-initiative-tracker": {
+      "wip": true
     }
   }
 }
