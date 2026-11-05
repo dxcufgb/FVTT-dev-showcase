@@ -320,7 +320,21 @@
       }
     },
     "FoundryVTT-initiative-tracker": {
-      "wip": true
+      "wip": true,
+       "videos": {
+        "demo": {
+          "url": "https://youtu.be/4HdXXvYM5BQ",
+          "title": "FoundryVTT V13 Module: Initiative Tracker - Demo",
+          "uploadDate": "2026-11-05T18:03:04-08:00",
+          "duration": 63
+        },
+        "tutorial": {
+          "url": "https://youtu.be/D2d7PI3A1zI",
+          "title": "FoundryVTT V13 Module: Initiative Tracker - Tutorial",
+          "uploadDate": "2026-11-05T18:03:13-08:00",
+          "duration": 198
+        }
+      }
     }
   }
 }
