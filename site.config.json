@@ -319,6 +319,9 @@
         }
       }
     },
+    "FoundryVTT-debug-recorder": {
+      "wip": true
+    },
     "FoundryVTT-initiative-tracker": {
       "wip": true,
        "videos": {
