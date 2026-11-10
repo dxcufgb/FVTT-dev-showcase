@@ -338,6 +338,9 @@
           "duration": 198
         }
       }
+    },
+    "FoundryVTT-player-bastions": {
+      "wip": true
     }
   }
 }
