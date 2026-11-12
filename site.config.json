@@ -320,7 +320,20 @@
       }
     },
     "FoundryVTT-debug-recorder": {
-      "wip": true
+      "wip": true,
+      "videos": {
+        "demo": {
+          "url": "https://youtu.be/a-hX1XdU5Lg",
+          "title": "FoundryVTT V13 Module: Debug Recorder - Demo",
+          "uploadDate": "2026-11-12T20:27:04-08:00",
+          "duration": 63
+        },
+        "tutorial": {
+          "url": "https://youtu.be/N9v-sDYQMgk",
+          "title": "FoundryVTT V13 Module: Debug Recorder - Tutorial",
+          "uploadDate": "2026-11-12T20:27:13-08:00",
+          "duration": 198
+        }
     },
     "FoundryVTT-initiative-tracker": {
       "wip": true,
@@ -340,7 +353,20 @@
       }
     },
     "FoundryVTT-player-bastions": {
-      "wip": true
+      "wip": true,
+      "videos": {
+        "demo": {
+          "url": "https://youtu.be/K8GcsNdDmVw",
+          "title": "FoundryVTT V13 Module: Player Bastions - Demo",
+          "uploadDate": "2026-11-12T20:18:04-08:00",
+          "duration": 70
+        },
+        "tutorial": {
+          "url": "https://youtu.be/W5yzuOt16Qw",
+          "title": "FoundryVTT V13 Module: Player Bastions - Tutorial",
+          "uploadDate": "2026-11-12T20:18:13-08:00",
+          "duration": 246
+        }
     }
   }
 }
