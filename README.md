@@ -91,6 +91,19 @@ A WIP badge shows on the module's card, its entries in the latest releases, and 
 
 Write a sentence instead of `true` to replace the default note, for example `"wip": "The Discord export format is still changing."`. `"wip": false` hides the badge even when the repo has the `wip` topic.
 
+## Marking a module as deprecated
+
+A grey **Deprecated** badge replaces the WIP badge on the module's card, its entries in the latest releases and its page, where a note says the module is no longer developed. Deprecated modules are left out of the home page description. Turn it on in either of two ways:
+
+- **On GitHub, no site change:** add the topic `deprecated` to the module repo.
+- **In `site.config.json`:**
+
+```json
+"FoundryVTT-death-trigger": { "deprecated": "Merged into Dxcufgb's Reminders." }
+```
+
+Use `true` for the default note, or a sentence to replace it. `"deprecated": false` hides the badge even when the repo has the topic.
+
 ## Videos
 
 The top of each module page has a **Demo** and a **Tutorial** tab. Both always show; a tab without a video says the video is not out yet and links to the playlist. A **More** tab appears only when you list videos under `more`, with a strip to pick between them.
