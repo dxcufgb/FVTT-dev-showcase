@@ -44,6 +44,7 @@
       }
     },
     "FoundryVTT-death-trigger": {
+      "deprecated": "Deprecated: this module has been merged into Dxcufgb's Reminders. Please use that module instead.",
       "videos": {
         "demo": {
           "url": "https://youtu.be/1_IfXjIs74s",

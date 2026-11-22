@@ -372,6 +372,8 @@ h1, h2, h3 { line-height: 1.15; text-wrap: balance; }
   box-shadow: 0 1px 0 rgba(0, 0, 0, .35);
   white-space: nowrap; cursor: help;
 }
+.wip.deprecated { background: #5b5650; color: #ece6dc; border-color: #2e2b28; }
+.deprecated-note { background: rgba(120, 112, 104, .14); border-color: rgba(160, 152, 144, .5); }
 .wip svg { width: 14px; height: 14px; }
 .chron-card h3 .wip, .module-head h1 + .wip { margin-left: 10px; position: relative; top: -2px; }
 .card-media { position: relative; }

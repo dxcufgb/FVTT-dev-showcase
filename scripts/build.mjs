@@ -186,6 +186,15 @@ function wipOf(m, over) {
   return v ? { note: typeof v === "string" && v.trim() ? v.trim() : null } : null;
 }
 
+// Deprecated: "deprecated": true (or a sentence to show instead of the default note)
+// in site.config.json, or the topic "deprecated" on the module's GitHub repo.
+// "deprecated": false in the config hides the badge even if the topic is set.
+function deprecatedOf(m, over) {
+  const topic = (m.topics || []).some((t) => /^deprecated$/i.test(t));
+  const v = over.deprecated ?? topic;
+  return v ? { note: typeof v === "string" && v.trim() ? v.trim() : null } : null;
+}
+
 // Pixel size of a PNG (width/height attributes stop the layout jumping while it loads).
 async function pngSize(file) {
   try {
@@ -258,6 +267,7 @@ for (const m of data.modules) {
     summary,
     videos,
     wip: wipOf(m, over),
+    deprecated: deprecatedOf(m, over),
     ...(over.title ? { shortTitle: over.title } : {}),
     slug,
     image,
@@ -377,6 +387,11 @@ const WIP_TEXT = "Work in progress: may be very buggy and can change a lot betwe
 const wipBadge = (mod) =>
   mod.wip ? `<span class="wip" title="${esc(mod.wip.note || WIP_TEXT)}">${ANVIL}WIP</span>` : "";
 
+const DEPRECATED_TEXT = "Deprecated: this module is no longer developed.";
+const deprecatedBadge = (mod) =>
+  mod.deprecated ? `<span class="wip deprecated" title="${esc(mod.deprecated.note || DEPRECATED_TEXT)}">Deprecated</span>` : "";
+const badges = (mod) => deprecatedBadge(mod) || wipBadge(mod);
+
 // eager: the first cards are above the fold, the rest load as they scroll in
 function cardImage(mod, base, eager = false) {
   const load = eager ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"';
@@ -413,7 +428,7 @@ const releaseNotes = (mdk, r) =>
 
 // ---------- home ----------
 const homeDescription = () => {
-  const mods = modules.filter((m) => m.isModule !== false && !m.wip).sort((a, b) => (b.downloads || 0) - (a.downloads || 0)).map((m) => m.shortTitle);
+  const mods = modules.filter((m) => m.isModule !== false && !m.wip && !m.deprecated).sort((a, b) => (b.downloads || 0) - (a.downloads || 0)).map((m) => m.shortTitle);
   const lead = `Free Foundry VTT v13 modules by ${OWNER}: `;
   const tail = " and more, with demo videos, docs and install links.";
   return lead + seo.listNames(mods, seo.DESC_MAX - lead.length - tail.length).replace(/ and ([^,]+)$/, ", $1") + tail;
@@ -423,7 +438,7 @@ const isModule = (m) => m.isModule !== false;
 function projectIndex(base) {
   const group = (label, list) => list.length ? `<div class="index-group">
     <h3>${label}</h3>
-    <ul>${list.map((m) => `<li><a href="${base}${DIR}/${esc(m.slug)}/">${esc(m.shortTitle)}</a>${m.wip ? ` <span class="muted">(work in progress)</span>` : ""}<span class="index-summary">${esc(m.summary)}</span></li>`).join("")}</ul>
+    <ul>${list.map((m) => `<li><a href="${base}${DIR}/${esc(m.slug)}/">${esc(m.shortTitle)}</a>${m.deprecated ? ` <span class="muted">(deprecated)</span>` : m.wip ? ` <span class="muted">(work in progress)</span>` : ""}<span class="index-summary">${esc(m.summary)}</span></li>`).join("")}</ul>
   </div>` : "";
   const sorted = [...modules].sort((a, b) => a.shortTitle.localeCompare(b.shortTitle));
   return `<section class="all-projects" aria-labelledby="all-h">
@@ -449,7 +464,7 @@ function home() {
   <time datetime="${esc(r.date)}">${fmtDate(r.date)}</time>
   <article class="chron-card parchment">
     <header>
-      <h3><a href="${DIR}/${esc(r.mod.slug)}/">${esc(r.mod.shortTitle)}</a>${wipBadge(r.mod)}</h3>
+      <h3><a href="${DIR}/${esc(r.mod.slug)}/">${esc(r.mod.shortTitle)}</a>${badges(r.mod)}</h3>
       <a class="tag" href="${esc(r.url)}" rel="noopener" target="_blank" title="Release on GitHub">${esc(r.version.match(/^\d/) ? "v" + r.version : r.version)}<span class="sr-only"> of ${esc(r.mod.shortTitle)} on GitHub</span></a>
     </header>
     <div class="notes prose" data-clamp>${releaseNotes(mdk, r)}</div>
@@ -490,9 +505,9 @@ ${projectIndex("./")}`,
 
 // ---------- module grid ----------
 function moduleCard(mod, base, eager) {
-  return `<li class="card parchment" data-title="${esc(mod.shortTitle.toLowerCase())}" data-search="${esc((mod.shortTitle + " " + mod.description + " " + mod.topics.join(" ") + " " + mod.kind + (mod.wip ? " wip work in progress" : "")).toLowerCase())}" data-date="${esc(mod.latestDate)}" data-downloads="${mod.downloads}">
+  return `<li class="card parchment" data-title="${esc(mod.shortTitle.toLowerCase())}" data-search="${esc((mod.shortTitle + " " + mod.description + " " + mod.topics.join(" ") + " " + mod.kind + (mod.wip ? " wip work in progress" : "") + (mod.deprecated ? " deprecated" : "")).toLowerCase())}" data-date="${esc(mod.latestDate)}" data-downloads="${mod.downloads}">
   <a class="card-link" href="${esc(mod.slug)}/" tabindex="-1" aria-hidden="true">
-    <div class="card-media">${cardImage(mod, base, eager)}${wipBadge(mod)}</div>
+    <div class="card-media">${cardImage(mod, base, eager)}${badges(mod)}</div>
   </a>
   <div class="card-body">
     <h2 class="card-title"><a href="${esc(mod.slug)}/">${esc(mod.shortTitle)}</a></h2>
@@ -611,7 +626,7 @@ function statBlock(mod, base) {
   <p class="statblock-sub">${esc(mod.kind)}${mod.manifest ? `, ${esc(sys || "system agnostic")}` : ""}</p>
   <hr class="taper">
   <dl class="props">
-    ${line("Status", mod.wip ? "Work in progress" : "")}
+    ${line("Status", mod.deprecated ? "Deprecated" : mod.wip ? "Work in progress" : "")}
     ${line("Version", mod.version ? esc(mod.version) : "Not released yet")}
     ${line("Foundry", mod.manifest ? `${esc(foundryRange(c))}${c.verified ? ` <span class="muted">(verified ${esc(c.verified)})</span>` : ""}` : "")}
     ${line("Systems", mod.manifest ? esc(sys || "Any game system") : "")}
@@ -696,7 +711,8 @@ function modulePage(mod) {
 <section class="module-head">
   <h1>${esc(mod.shortTitle)}</h1>
   <p class="lede">${esc(mod.summary)}</p>
-  ${mod.wip ? `<p class="wip-note">${wipBadge(mod)}<span>${esc(mod.wip.note || WIP_TEXT)}${mod.notPublic ? "" : ` <a href="${esc(mod.url)}/issues" rel="noopener" target="_blank">Report bugs on GitHub</a>.`}</span></p>` : ""}
+  ${mod.deprecated ? `<p class="wip-note deprecated-note">${deprecatedBadge(mod)}<span>${esc(mod.deprecated.note || DEPRECATED_TEXT)}</span></p>` : ""}
+  ${mod.wip && !mod.deprecated ? `<p class="wip-note">${wipBadge(mod)}<span>${esc(mod.wip.note || WIP_TEXT)}${mod.notPublic ? "" : ` <a href="${esc(mod.url)}/issues" rel="noopener" target="_blank">Report bugs on GitHub</a>.`}</span></p>` : ""}
 </section>
 ${videoBlock(mod)}
 <div class="module-layout">
@@ -710,7 +726,7 @@ ${history ? `<section class="history" aria-labelledby="hist-h">
 </section>` : ""}
 ${rel.length ? `<section class="related" aria-labelledby="rel-h">
   <h2 id="rel-h" class="section-title">Related projects</h2>
-  <ul class="related-list">${rel.map((o) => `<li class="parchment"><a href="../${esc(o.slug)}/">${esc(o.shortTitle)}</a>${o.wip ? ` <span class="muted">(work in progress)</span>` : ""}<p>${esc(o.summary)}</p></li>`).join("")}</ul>
+  <ul class="related-list">${rel.map((o) => `<li class="parchment"><a href="../${esc(o.slug)}/">${esc(o.shortTitle)}</a>${o.deprecated ? ` <span class="muted">(deprecated)</span>` : o.wip ? ` <span class="muted">(work in progress)</span>` : ""}<p>${esc(o.summary)}</p></li>`).join("")}</ul>
 </section>` : ""}`,
   });
 }
@@ -755,7 +771,7 @@ function docsPage(mod, page) {
 <nav class="crumbs" aria-label="Breadcrumb"><a href="${base}">Home</a> <span aria-hidden="true">/</span> <a href="${base}${DIR}/">Projects</a> <span aria-hidden="true">/</span> <a href="${base}${DIR}/${esc(mod.slug)}/">${esc(mod.shortTitle)}</a> <span aria-hidden="true">/</span> ${isIndex ? `<span aria-current="page">Documentation</span>` : `<a href="${href({ slug: "" })}">Documentation</a> <span aria-hidden="true">/</span> <span aria-current="page">${esc(page.title)}</span>`}</nav>
 <section class="module-head">
   <h1>${esc(h1)}</h1>
-  ${mod.wip ? `<p class="wip-note">${wipBadge(mod)}<span>${esc(mod.wip.note || WIP_TEXT)}</span></p>` : ""}
+  ${mod.deprecated ? `<p class="wip-note deprecated-note">${deprecatedBadge(mod)}<span>${esc(mod.deprecated.note || DEPRECATED_TEXT)}</span></p>` : mod.wip ? `<p class="wip-note">${wipBadge(mod)}<span>${esc(mod.wip.note || WIP_TEXT)}</span></p>` : ""}
 </section>
 <div class="module-layout">
   <article class="parchment prose readme">${body}
